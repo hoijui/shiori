@@ -22,11 +22,21 @@
 
 # This installs or removes a custom git merge driver to the local repo.
 #
-# Please the driver to prevent merge conflicts in the generated sources.
+# Please use the driver to prevent merge conflicts in the generated sources.
 #
 # NOTE This is really only required for devs, hacking on this code-base.
-# NOTE All of this gets installed into the local repo only, under ".git/",
-#      meaning it is not versioned.
+# NOTE All this scripts changes happen in the local repo, under ".git/",
+#      so none of its changes are versioned.
+# NOTE This script is entirely self-contained (has no external dependencies),
+#      and can thus be copied into any other project as-is.
+#
+# Concrete actions this script undertakes:
+# * creates the merge driver script ($driver_file)
+# * creates entries in the local repos git config ($conf_file)
+# * configures the local repo to use the merge driver for certain files ($attribs_file)
+# * installs a git pre-commit hook, so `go generate` is always executed,
+#   and one does not forget to include the changes in the generated sources
+#   caused by the commit
 
 driver_name="go-generate"
 driver_file=".git/merge-driver-go-generate"

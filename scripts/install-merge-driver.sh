@@ -48,15 +48,30 @@ marker_begin="# BEGIN $gen_token"
 marker_end="# END $gen_token"
 header_note="# NOTE Do not manually edit this section; it was generated with $this_script_file"
 
+function usage() {
+
+	echo "Usage:"
+	echo "\t$this_script_file help        shows this help"
+	echo "\t$this_script_file install     installs the 'go generate' merge driver into the local git repo"
+	echo "\t$this_script_file remove      removes all changes previously done by 'install'"
+	echo "\t$this_script_file reinstall   simply calls first 'remove' and then 'install'"
+}
+
 action="$1"
 if [ "$action" = "" ]
 then
 	# Set the default action
 	action="install"
 fi
+if [ "$action" = "help" ]
+then
+	usage
+	exit 0
+fi
 if [ "$action" != "install" -a "$action" != "remove" -a "$action" != "reinstall" ]
 then
-	>&2 echo "Invalid action '$action'; please choose either of: install, remove, reinstall"
+	>&2 echo "Invalid action '$action'"
+	usage
 	exit 1
 fi
 if [ "$action" = "reinstall" ]

@@ -40,38 +40,42 @@ func newWebHandler(db dt.Database, dataDir string) (*webHandler, error) {
 }
 
 func (h *webHandler) checkToken(r *http.Request) error {
-	tokenCookie, err := r.Cookie("token")
-	if err != nil {
-		return fmt.Errorf("Token error: Token does not exist")
-	}
+	if false { // HACK disable login
+		tokenCookie, err := r.Cookie("token")
+		if err != nil {
+			return fmt.Errorf("Token error: Token does not exist")
+		}
 
-	token, err := jwt.Parse(tokenCookie.Value, h.jwtKeyFunc)
-	if err != nil {
-		return fmt.Errorf("Token error: %v", err)
-	}
+		token, err := jwt.Parse(tokenCookie.Value, h.jwtKeyFunc)
+		if err != nil {
+			return fmt.Errorf("Token error: %v", err)
+		}
 
-	claims := token.Claims.(jwt.MapClaims)
-	err = claims.Valid()
-	if err != nil {
-		return fmt.Errorf("Token error: %v", err)
+		claims := token.Claims.(jwt.MapClaims)
+		err = claims.Valid()
+		if err != nil {
+			return fmt.Errorf("Token error: %v", err)
+		}
 	}
 
 	return nil
 }
 
 func (h *webHandler) checkAPIToken(r *http.Request) error {
-	token, err := request.ParseFromRequest(r,
-		request.AuthorizationHeaderExtractor,
-		h.jwtKeyFunc)
-	if err != nil {
-		// Try to check in cookie
-		return h.checkToken(r)
-	}
+	if false { // HACK disable login
+		token, err := request.ParseFromRequest(r,
+			request.AuthorizationHeaderExtractor,
+			h.jwtKeyFunc)
+		if err != nil {
+			// Try to check in cookie
+			return h.checkToken(r)
+		}
 
-	claims := token.Claims.(jwt.MapClaims)
-	err = claims.Valid()
-	if err != nil {
-		return fmt.Errorf("Token error: %v", err)
+		claims := token.Claims.(jwt.MapClaims)
+		err = claims.Valid()
+		if err != nil {
+			return fmt.Errorf("Token error: %v", err)
+		}
 	}
 
 	return nil
@@ -109,4 +113,3 @@ func redirectPage(w http.ResponseWriter, r *http.Request, url string) {
 	w.Header().Set("Expires", "0")
 	http.Redirect(w, r, url, 301)
 }
-
